@@ -1,0 +1,2 @@
+# AutoTrade
+Stock trading bot
