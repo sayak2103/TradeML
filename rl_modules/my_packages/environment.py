@@ -18,7 +18,7 @@ class StockEnv :
         self.purchase_price = []
         self.capital = 0
     #
-    def set_env_data(data) :
+    def set_env_data(self, data) :
         self.data = data
         self.samples = len(data)
         self.current_sample = 0
@@ -26,7 +26,7 @@ class StockEnv :
     def reset(self) : 
         self.current_sample = 0;
     #
-    def get_current_sate(self) : 
+    def get_current_state(self) : 
         if(self.current_sample >= samples) :
             raise Exception("No more samples")
             return

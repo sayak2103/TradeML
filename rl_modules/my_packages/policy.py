@@ -15,7 +15,7 @@ class Policy :
         self.J=Losses().get_loss(loss)
         self.set_layer_idx()
         self.init_NN_layer()
-        self.possible_actions = layers[self.num_layers - 1].units
+        self.possible_actions = layers[self.num_layers - 1].n
         self.replay_buffer = deque(maxlen = 10000)
         
     def set_layer_idx(self) :
@@ -60,6 +60,7 @@ class Policy :
     def trade_once(self, env, state, epsilon) :
         action = self.get_action(state, epsilon)
         next_state, reward, done, logs = env.take_train_action(action)
+        env.goto_next_sample()
         self.replay_buffer.append((state, action, reward, done, next_state))
         return next_state, reward, done, logs
     #
