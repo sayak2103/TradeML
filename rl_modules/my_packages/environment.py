@@ -6,7 +6,7 @@ class StockEnv :
     #
     #put the index of the features that the data would have after feature engineering
     open_idx = 0
-    close_idx = 0
+    close_idx = 3
     vol_idx = 0
     
     def __init__(self, t = 1, capital=1e9) : 
@@ -16,7 +16,7 @@ class StockEnv :
         self.type = t
         self.num_shares = 0
         self.purchase_price = []
-        self.capital = 0
+        self.capital = 1e9
     #
     def set_env_data(self, data) :
         self.data = data
@@ -27,15 +27,16 @@ class StockEnv :
         self.current_sample = 0;
     #
     def get_current_state(self) : 
-        if(self.current_sample >= samples) :
+        if(self.current_sample >= self.samples) :
             raise Exception("No more samples")
             return
         return self.data[self.current_sample,:]
     #
-    def set_current_state(self) :
-        self.current_state = self.get_current_sate()
-    def set_current_state(self, st) : 
-        self.current_state = st
+    def set_current_state(self, st=None) :
+        if(st==None) : 
+            self.current_state = self.get_current_state()
+        else :
+            self.current_state = st
     #
     def take_train_action(self, action) : 
         # action manual
@@ -44,12 +45,12 @@ class StockEnv :
         # 2 -> Sell (S)
         self.set_current_state()
         if action == 0 :#buying
-            if self.capital >= self.current_state[close_idx] :
-                logs = "bought share at {price : .2f}".format(price = self.current_state[close_idx])
+            if self.capital >= self.current_state[StockEnv.close_idx] :
+                logs = "bought share at {price: .2f}".format(price = self.current_state[StockEnv.close_idx])
                 reward = -10
-                self.capital -= self.current_state[close_idx]
+                self.capital -= self.current_state[StockEnv.close_idx]
                 self.num_shares += 1
-                self.purchase_-price.append(self.current_state[close_idx])
+                self.purchase_price.append(self.current_state[StockEnv.close_idx])
             else : 
                 logs = "insufficient capital , can't buy"
                 reward = 0
@@ -59,8 +60,9 @@ class StockEnv :
         elif action == 2 :
             reward = 0
             for i in range(self.num_shares) :
-                reward += self.current_price[close_idx] - self.purchase_price[i]
-            logs = "sold {num} share at {price : .2f}".format(num = self.num_shares, price = self.current_state[close_idx])
+                reward += self.current_state[StockEnv.close_idx] - self.purchase_price[i]
+            logs = "sold {num} share at {price: .2f}".format(num = self.num_shares, price = self.current_state[StockEnv.close_idx])
+            self.num_shares = 0
         #
         if self.current_sample == self.samples - 1 :
             done = 1

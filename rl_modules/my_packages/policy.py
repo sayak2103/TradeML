@@ -9,11 +9,12 @@ class Policy :
     #
     #contructor to initializde the neural network policy  
     #takes a list of layer objects as a parameter
-    def __init__(self, layers, loss='mse') : 
+    def __init__(self, layers, data_cols, loss='mse') : 
         self.num_layers=len(layers)
         self.layers=layers
         self.J=Losses().get_loss(loss)
         self.set_layer_idx()
+        self.layers[0].init_layer(data_cols)
         self.init_NN_layer()
         self.possible_actions = layers[self.num_layers - 1].n
         self.replay_buffer = deque(maxlen = 10000)
@@ -25,7 +26,7 @@ class Policy :
     def init_NN_layer(self) :
         for i in range(1,self.num_layers) :
             self.layers[i].init_layer(self.layers[i-1].n)
-
+    #
     #function for prediction or simply froward propagation
     def predict(self, X) : 
         y_cap=self.layers[0].forward_propagation(X, self)
@@ -58,7 +59,7 @@ class Policy :
     #
     #
     def trade_once(self, env, state, epsilon) :
-        action = self.get_action(state, epsilon)
+        action = int(self.get_action(state, epsilon))
         next_state, reward, done, logs = env.take_train_action(action)
         env.goto_next_sample()
         self.replay_buffer.append((state, action, reward, done, next_state))
@@ -68,21 +69,27 @@ class Policy :
     def train_step(self, env, batch_size, epsilon, discount_factor = '0.5',  
                     optimizer = 'sdg', learning_rate = 0.1, decay = 0.001, 
                     momentum = 0, get_log = False) :
-        
         self.opt = SDG(learning_rate, decay, momentum)
         #
         #select random sample of experiences from the whole set to prevent correlation during training
         experiences = self.sample_experiences(batch_size)
-        states, actions, rewards, next_states = experiences
-        #now for each of those experiences we have the next states which are the states that the action taken in that step has lead us into , considering the model works optimally from there on , now we get the Q-values of those next steps,(next_next_steps) 
+        states, actions, rewards, dones, next_states = experiences
+        #now for each of those experiences we have the next states which are the states that the action taken in that step has lead us into , 
+        #considering the model works optimally from there on , now we get the Q-values of those next steps,(next_next_steps) 
         #these Q values represent the output of next_next_states
         next_Q_values = self.predict(next_states)
-        #considering that the model works optimally after the next states we take on the maximum Q-value from there rejecting the less profitable actions
+        #considering that the model works optimally after the next states we take on the maximum Q-value from there 
+        #rejecting the less profitable actions
         next_max_actions = np.argmax(next_Q_values, axis = 1)
         encoded_next_actions = np.zeros((batch_size, self.possible_actions), dtype = float)
         encoded_next_actions[np.arange(batch_size), next_max_actions] = 1
         max_next_Q_values = next_Q_values * encoded_next_actions
-        #using bellman's equation to calculate the discounted output Q_value, and this becomes out target value to which out DNN will train to learn
+        #using bellman's equation to calculate the discounted output Q_value, 
+        #and this becomes out target value to which out DNN will train to learn
+        rewards = np.resize(rewards, (batch_size, 1))
+        reward = np.append(rewards,rewards,axis=1)
+        reward = np.append(reward,rewards,axis=1)
+        rewards = reward * encoded_next_actions
         target_Q_values = rewards + (discount_factor * max_next_Q_values)
         #run optimization step tp 
         all_Q_values = self.predict(states)
@@ -98,17 +105,14 @@ class Policy :
             self.opt.update_parameters(self.layers[i])
         self.opt.post_update_params()
     #
-    def episode_train(self, env) :
+    def episode_train(self, env, batch_size = 50) :
         for episode in range(500) :
             env.reset()
-            for step in range(8000) :
+            for step in range(200) :
                 eps = max(1 - episode / 400, 0.01)
                 state = env.get_current_state()
                 next_state, reward, done, logs = self.trade_once(env, state, epsilon=eps)
                 if done==1 : 
                     break;
             if episode > 50 :
-                self.train_step(env, batch_size = 100,epsilon = eps, discount_factor = 0.8)
-    #
-    #
-    #
+                self.train_step(env, batch_size,epsilon = eps, discount_factor = 0.8)
