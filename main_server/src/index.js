@@ -4,6 +4,7 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const collection = require("./mongodb");
+const socketIOClient = require("socket.io-client");
 
 // Setting up the template path
 const templatePath = path.join(__dirname, "../templates");
@@ -75,6 +76,23 @@ app.post("/login", async (req, res) => {
 app.get("/logout", (req, res) => {
     req.session.destroy(() => {
         res.redirect("/");
+    });
+});
+
+// WebSocket client connection to Flask server
+const socket = socketIOClient("http://127.0.0.1:5000"); // Flask server URL
+
+socket.on("connect", () => {
+    console.log("Connected to Flask server via WebSocket");
+});
+
+// Listen for the 'model_output' event from Flask server
+socket.on("model_output", (data) => {
+    console.log("Received result from Flask server:", data.result);
+    // You can now send this data to your clients or do other things with it
+    // For example, you can pass it to the template when rendering a page
+    app.get("/result", (req, res) => {
+        res.render("result", { result: data.result });
     });
 });
 
