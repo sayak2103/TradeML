@@ -6,17 +6,16 @@ class StockEnv :
     #
     #put the index of the features that the data would have after feature engineering
     open_idx = 0
+    high_idx = 1
+    low_idx = 2
     close_idx = 3
-    vol_idx = 0
+    vol_idx = 4
+    avg_price_idx = 5
     
-    def __init__(self, t = 1, capital=1e9) : 
-        #recieved data as np array fromat
-        # 0 -> training env
-        # 1 -> using env
-        self.type = t
+    def __init__(self) : 
         self.num_shares = 0
         self.purchase_price = []
-        self.capital = 1e9
+        self.avg_price = 0
     #
     def set_env_data(self, data) :
         self.data = data
@@ -27,54 +26,35 @@ class StockEnv :
         self.current_sample = 0;
     #
     def get_current_state(self) : 
-        if(self.current_sample >= self.samples) :
-            raise Exception("No more samples")
-            return
-        return self.data[self.current_sample,:]
+        return np.append(self.data[self.current_sample,:], self.avg_price)
     #
-    def set_current_state(self, st=None) :
-        if(st==None) : 
-            self.current_state = self.get_current_state()
-        else :
-            self.current_state = st
-    #
-    def take_train_action(self, action) : 
-        # action manual
-        # 0 -> Buy (B)
-        # 1 -> Hold (H)
-        # 2 -> Sell (S)
-        self.set_current_state()
-        if action == 0 :#buying
-            if self.capital >= self.current_state[StockEnv.close_idx] :
-                logs = "bought share at {price: .2f}".format(price = self.current_state[StockEnv.close_idx])
-                reward = -10
-                self.capital -= self.current_state[StockEnv.close_idx]
-                self.num_shares += 1
-                self.purchase_price.append(self.current_state[StockEnv.close_idx])
-            else : 
-                logs = "insufficient capital , can't buy"
-                reward = 0
-        elif action == 1 :
-            reward = 0
-            logs = ""
-        elif action == 2 :
-            reward = 0
-            for i in range(self.num_shares) :
-                reward += self.current_state[StockEnv.close_idx] - self.purchase_price[i]
-            logs = "sold {num} share at {price: .2f}".format(num = self.num_shares, price = self.current_state[StockEnv.close_idx])
+    def reward_function(self, action) :
+        reward = 0.
+        close_price = self.data[self.current_sample,StockEnv.close_idx]
+        if action == 0  : #BUY
+            reward = -0.3
+            self.num_shares += 1;
+            self.purchase_price.append(close_price)
+        elif action == 1 : #HOLD
+            pass
+        elif self.num_shares==0 :
+            pass
+        else : #SELL
+            profit = self.num_shares * (close_price - self.avg_price)
             self.num_shares = 0
-        #
-        if self.current_sample == self.samples - 1 :
-            done = 1
-        else : 
-            done = 0
-        #
-        if done==0 : 
-            next_state = self.data[self.current_sample + 1,:]
-        else :
-            next_state = -1
-        #
-        return next_state, reward, done, logs
+            self.avg_price = 0
+            if profit > 0 :
+                reward += 1
+            elif profit == 0 :
+                reward += 0
+            else :
+                reward -= 10
+        return reward
     #
     def goto_next_sample(self) :
-        self.current_sample += 1
+        if self.current_sample < self.samples-1 :
+            self.current_sample += 1
+            return True
+        else :
+            return False
+    
