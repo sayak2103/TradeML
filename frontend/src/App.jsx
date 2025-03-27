@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import './App.css'
-
+import { useState } from "react";
+import TradeArena from './components/TradeArena'
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      
-    </>
-  )
+    return (
+        <div>
+            <TradeArena/>
+        </div>
+    );
 }
 
-export default App
+export default App;
