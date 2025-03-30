@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 function TradeWindow() {
-    const [dateTime, setDateTime] = useState("");
+    const [data, setData] = useState([[]]);
 
     useEffect(() => {
         const socket = io("http://localhost:8080");
 
-        socket.on("dateTime", (data) => {
-            setDateTime(data.dateTime);
+        socket.on("newData", (d) => {
+            if(Array.isArray(d)){
+                setData((prevData) => [...prevData , d])
+            }
         });
 
         return () => socket.disconnect();
@@ -16,8 +18,8 @@ function TradeWindow() {
 
     return (
         <div>
-            <h2>Real-time Data</h2>
-            <p>Current Date & Time: {dateTime}</p>
+            <h2>Trading logs</h2>
+            <pre>{JSON.stringify(data , null , 1)}</pre>
             <h3>Submitted Data</h3>
         </div>
     );

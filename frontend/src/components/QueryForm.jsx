@@ -8,7 +8,7 @@ function QueryForm({ setFormData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = { company, duration };
-        console.log("form submitted", data)
+        //console.log("form submitted", data)
         try {
             const response = await fetch("http://localhost:8080/trade", {
                 method: "POST",
