@@ -5,12 +5,12 @@ import numpy as np
 class StockEnv : 
     #
     #put the index of the features that the data would have after feature engineering
-    open_idx = 0
-    high_idx = 1
-    low_idx = 2
-    close_idx = 3
-    vol_idx = 4
-    avg_price_idx = 5
+    co_idx = 0
+    hl_idx = 1
+    ho_idx = 2
+    ol_idx = 3
+    close_idx = 4
+    vol_idx = 5
     
     def __init__(self) : 
         self.num_shares = 0
@@ -23,7 +23,10 @@ class StockEnv :
         self.current_sample = 0
     #
     def reset(self) : 
-        self.current_sample = 0;
+        self.current_sample = 0
+        self.avg_price = 0
+        self.num_shares = 0
+        self.purchase_price.clear()
     #
     def get_current_state(self) : 
         return np.append(self.data[self.current_sample,:], self.avg_price)
@@ -32,9 +35,10 @@ class StockEnv :
         reward = 0.
         close_price = self.data[self.current_sample,StockEnv.close_idx]
         if action == 0  : #BUY
-            reward = -0.3
-            self.num_shares += 1;
+            reward = -0.5
+            self.num_shares += 1
             self.purchase_price.append(close_price)
+            self.avg_price = np.mean(self.purchase_price)
         elif action == 1 : #HOLD
             pass
         elif self.num_shares==0 :
@@ -48,7 +52,7 @@ class StockEnv :
             elif profit == 0 :
                 reward += 0
             else :
-                reward -= 10
+                reward -= 1
         return reward
     #
     def goto_next_sample(self) :

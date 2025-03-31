@@ -12,6 +12,8 @@ class NN :
         self.J=Losses().get_loss(loss)
         self.set_layer_idx()
         self.init_NN_layer()
+        self.training_log = []
+        self.data_features = []
         
     def set_layer_idx(self) :
         for i in range(self.num_layers) :
