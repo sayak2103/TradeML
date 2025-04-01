@@ -26,6 +26,7 @@ const options = {
 };
 async function get_data(url , company){
     const response = await fetch(url, options)
+    //console.log(response.status)
     const json = await response.json();
     return json.bars[company]
 }
@@ -52,9 +53,15 @@ app.use(express.json());
 
 let company = "";
 let time = 0;
+let cap = 0;
+let profit = 0;
+let num_shares = 0;
+let total_cost = 0;
 app.post('/trade' , (req,res)=>{
-    company = req.body.company
-    time = req.body.duration
+    company = req.body.company;
+    time = req.body.duration;
+    cap = req.body.capital;
+    profit = num_shares = total_cost = 0;
     res.json({message : 'data received'});
 });
 
@@ -68,19 +75,44 @@ io.on("connection", (socket) => {
             // 0-close | 1-high | 2-low | 3-n | 4-open | 5-time | 6-volume | 7-vol wt. price 
             let data = Object.values(d);
             pred = getPrediction(data);
-            if(pred == 0)
-                data.push("BUY")
+            if(pred == 0){
+                if(data[0] <= cap){
+                    cap-=data[0]
+                    data.push("BUY")
+                    num_shares ++;
+                    total_cost += data[0];
+                }
+                else{
+                    data.push("BUY -> aborted")
+                }
+            }
             else if(pred == 1)
                 data.push("HOLD")
-            else
-                data.push("SELL")
+            else{
+                if(num_shares > 0){
+                    let SP = num_shares * data[0];
+                    // CP = total_cost
+                    let change = SP - total_cost;
+                    profit += change
+                    cap += change
+                    num_shares = 0
+                    total_cost = 0
+                    data.push("SELL")
+                }
+                else{
+                    data.push("SELL -> aborted")
+                }
+            }
+            data.push(cap)
+            data.push(num_shares)
+            data.push(profit)
             socket.emit("newData", data);
         })
         if(time-- == 1){
             socket.emit("newData" , "TRADE FINISHED");
             clearInterval(interval);
         }
-    }, 1000 * 2);
+    }, 1000 * 60);
 
     socket.on("disconnect", () => {
         console.log("Client disconnected:", socket.id);
