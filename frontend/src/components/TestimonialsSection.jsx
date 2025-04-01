@@ -1,6 +1,7 @@
-import { Box, Container, Typography, Grid, Card, CardContent, Avatar, Rating } from "@mui/material";
+import { Box, Container, Typography, Grid, Card, CardContent, Avatar, Rating, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import { Link as RouterLink } from "react-router-dom";
 
 function TestimonialsSection() {
   const testimonials = [
@@ -25,7 +26,7 @@ function TestimonialsSection() {
   ];
 
   return (
-    <Box sx={{ py: 10, bgcolor: "#1E293B" }}>
+    <Box sx={{ py: 10, bgcolor: "#f5f5f5" }}>
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -39,7 +40,7 @@ function TestimonialsSection() {
             align="center" 
             gutterBottom 
             fontWeight="bold"
-            color="white"
+            color="#2D3748"
             sx={{ mb: 6 }}
           >
             What Our Users Say
@@ -54,8 +55,9 @@ function TestimonialsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, boxShadow: "0px 8px 20px rgba(0, 230, 118, 0.3)" }} // Hover Animation
               >
-                <Card sx={{ height: "100%", bgcolor: "#2D3748", color: "white", boxShadow: 4, position: "relative", p: 2 }}>
+                <Card sx={{ height: "100%", bgcolor: "#2D3748", width: "50vh", color: "white", boxShadow: 4, position: "relative", p: 2 }}>
                   <Box sx={{ position: "absolute", top: 20, right: 20, color: "#00E676", opacity: 0.3 }}>
                     <FormatQuoteIcon sx={{ fontSize: 60, transform: "rotate(180deg)" }} />
                   </Box>
@@ -83,6 +85,35 @@ function TestimonialsSection() {
             </Grid>
           ))}
         </Grid>
+
+        {/* Start Your Journey Button */}
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Button
+              component={RouterLink}
+              to="/tradearena"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 4,
+                py: 1.5,
+                bgcolor: "#00E676",
+                color: "black",
+                fontWeight: "bold",
+                borderRadius: "4px",
+                "&:hover": {
+                  bgcolor: "#00c853",
+                },
+              }}
+            >
+              Start Your Journey
+            </Button>
+          </motion.div>
+        </Box>
       </Container>
     </Box>
   );

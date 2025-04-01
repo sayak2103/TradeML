@@ -9,6 +9,7 @@ import Footer from "./Footer";
 import ShieldIcon from "@mui/icons-material/Shield";
 import UpdateIcon from "@mui/icons-material/Update";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import CallToActionSection from "./CallToActionSection";
 
 function HomePage() {
   return (
@@ -140,6 +141,9 @@ function HomePage() {
 
       {/* Testimonials Section */}
       <TestimonialsSection id="testimonials" />
+
+      {/* CallToActionSection*/}
+      <CallToActionSection /> 
 
       {/* Footer */}
       <Footer />
