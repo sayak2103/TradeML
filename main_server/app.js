@@ -11,6 +11,7 @@ const port = 8080;
 const cors = require('cors');
 const { json } = require("stream/consumers");
 const { randomInt } = require("crypto");
+// const axios = require("axios");
 //const { duration } = require("@mui/material");
 const app = express();
 const server = http.createServer(app);
@@ -30,10 +31,10 @@ async function get_data(url , company){
 }
 async function getPrediction(state) {
     try {
-        const response = await axios.get('http://localhost:5000/predict', {
-            params: { states: state }  
-        });
-        return response.data.prediction;
+        // const response = await axios.get('http://localhost:5000/predict', {
+        //     params: { states: state }  
+        // });
+        // return response.data.prediction;
     } catch (error) {
         console.error("Error:", error.response ? error.response.data : error.message);
     }
