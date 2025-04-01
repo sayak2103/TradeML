@@ -17,7 +17,7 @@ import {
   VictoryTooltip,
   VictoryVoronoiContainer
 } from "victory";
-import './TradeWindow.css';
+
 
 function TradeWindow() {
   const [data, setData] = useState([[]]);
