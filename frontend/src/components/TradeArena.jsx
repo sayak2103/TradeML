@@ -17,8 +17,15 @@ function TradeArena() {
   const [formData, setFormData] = useState(null);
   const [candleData, setCandleData] = useState([]); // Replace with your actual data
 
+  // Get the current time in hours and minutes
+  const currentHour = new Date().getHours();
+  const currentMinute = new Date().getMinutes();
+
+  // Check if it's after 19:30
+  const marketClosed = currentHour <= 19 || (currentHour === 19 && currentMinute >= 30);
+
   return (
-    <Box sx={{ minHeight: "100vh",minWidth:'100vw', bgcolor: "#0A192F" }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: "#0A192F" }}>
       {/* Navbar - Tight spacing */}
       <AppBar position="static" sx={{ bgcolor: "#112240", boxShadow: 'none' }}>
         <Toolbar sx={{ minHeight: '48px' }}>
@@ -34,19 +41,21 @@ function TradeArena() {
       </AppBar>
 
       {/* No gap between navbar and alert */}
-      <Container maxWidth="lg" sx={{ py: 0 }}>
-        {/* NYSE Market Hours Alert - No top margin */}
-        <Alert severity="warning" sx={{ 
-          bgcolor: "#ff9800", 
-          color: "white",
-          borderRadius: 0,
-          '& .MuiAlert-message': { py: 1 }
-        }}>
-          <Typography fontWeight="bold" sx={{ color: "white" }}>NYSE Market Hours</Typography>
-          <Typography variant="body2" sx={{ color: "white" }}>
-            The New York Stock Exchange is currently closed. Market opens at 9:30 AM ET today.
-          </Typography>
-        </Alert>
+      <Container maxWidth="xlg" sx={{ py: 0 }}>
+        {/* NYSE Market Hours Alert - Only display after 19:30 */}
+        {marketClosed && (
+          <Alert severity="warning" sx={{ 
+            bgcolor: "#ff9800", 
+            color: "white",
+            borderRadius: 0,
+            '& .MuiAlert-message': { py: 1 }
+          }}>
+            <Typography fontWeight="bold" sx={{ color: "white" }}>NYSE Market Hours</Typography>
+            <Typography variant="body2" sx={{ color: "white" }}>
+              The New York Stock Exchange is currently closed. Market opens at 9:30 AM ET today.
+            </Typography>
+          </Alert>
+        )}
 
         {/* Input Section - No title, tight spacing */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
@@ -54,7 +63,7 @@ function TradeArena() {
             p: 3, 
             borderRadius: 0, 
             bgcolor: "#1B2A41", 
-            maxHeight:300, 
+            maxHeight: 200, 
             mx: "auto",
             mt: 0,
             mb: 0
