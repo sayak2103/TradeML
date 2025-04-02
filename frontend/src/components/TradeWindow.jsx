@@ -71,11 +71,14 @@ function TradeWindow() {
     if (data.length <= 1 && data[0].length === 0) {
       return "Waiting for trading data...";
     }
+
     return JSON.stringify(data, null, 2);
   };
 
   return (
-    <Box>
+    <Box sx={{
+      display: 'flex'
+    }}>
       {!connected && !error && (
         <Box display="flex" alignItems="center" mb={2}>
           <CircularProgress size={20} sx={{ mr: 1 }} />
@@ -83,37 +86,38 @@ function TradeWindow() {
         </Box>
       )}
 
+
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <Paper
-          elevation={3}
-          sx={{
-            flex: 7,
-            p: 3,
-            borderRadius: 0,
-            bgcolor: "#1B2A41",
-            borderRight: { md: "1px solid #112240" },
-            width: "65vw",
-          }}
-        >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Paper elevation={3} sx={{
+          flex: 7,
+          p: 3,
+          borderRadius: 0,
+          bgcolor: "#1B2A41",
+          borderRight: { md: '1px solid #112240' },
+          width: '65vw'
+        }}>
           <Typography variant="h5" gutterBottom sx={{ color: "#00E676" }}>
             Performance Dashboard
           </Typography>
-          <Box
-            sx={{
-              height: "400px",
-              bgcolor: "rgba(255,255,255,0.1)",
-              borderRadius: "4px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <Box sx={{
+            flex: 7,
+            height: "400px",
+            bgcolor: "rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            // display: "flex", 
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
             <VictoryChart
               theme={VictoryTheme.material}
               domainPadding={{ x: 25 }}
@@ -138,17 +142,20 @@ function TradeWindow() {
               <VictoryAxis
                 style={{
                   axis: { stroke: "#00E676" },
-                  tickLabels: { fill: "white" },
+                  tickLabels: { fill: "white" }
                 }}
               />
               <VictoryAxis
                 dependentAxis
                 style={{
                   axis: { stroke: "#00E676" },
-                  tickLabels: { fill: "white" },
+                  tickLabels: { fill: "white" }
                 }}
               />
-              <VictoryCandlestick candleColors={{ positive: "#00E676", negative: "#FF5252" }} data={candleData} />
+              <VictoryCandlestick
+                candleColors={{ positive: "#00E676", negative: "#FF5252" }}
+                data={candleData}
+              />
             </VictoryChart>
           </Box>
         </Paper>

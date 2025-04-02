@@ -56,10 +56,10 @@ function QueryForm({ setFormData }) {
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       <Paper elevation={0} sx={{ bgcolor: "transparent" }}>
-        <Table sx={{ mb: 3 }}>
+        <Table sx={{m:-2,mt:-2}}>
           <TableBody>
-            <TableRow>
-              <TableCell sx={{ border: 'none', color: 'white', fontWeight: 'bold', p: 1 }}>Company/Stock</TableCell>
+            <TableRow >
+              <TableCell sx={{ border: 'none', color: 'white',fontWeight: 'bold', p: 1 }}>Company/Stock</TableCell>
               <TableCell sx={{ border: 'none', color: 'white', fontWeight: 'bold', p: 1 }}>Investment Capital ($)</TableCell>
               <TableCell sx={{ border: 'none', color: 'white', fontWeight: 'bold', p: 1 }}>Trading Duration</TableCell>
             </TableRow>
@@ -80,7 +80,7 @@ function QueryForm({ setFormData }) {
                     ),
                   }}
                   sx={{
-                    "& input": { color: "white" },
+                    "& input": { color: "white",m:-1.2},
                     "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.2)" },
                     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.4)" },
                   }}
@@ -103,7 +103,7 @@ function QueryForm({ setFormData }) {
                     ),
                   }}
                   sx={{
-                    "& input": { color: "white" },
+                    "& input": { color: "white" ,m:-1.2},
                     "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.2)" },
                     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.4)" },
                   }}
@@ -126,7 +126,7 @@ function QueryForm({ setFormData }) {
                     ),
                   }}
                   sx={{
-                    "& input": { color: "white" },
+                    "& input": { color: "white",m:-1.2 },
                     "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.2)" },
                     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.4)" },
                   }}
@@ -142,10 +142,11 @@ function QueryForm({ setFormData }) {
                     endIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
                     sx={{ 
                       height: '56px',
-                      bgcolor: "#64ffda", 
+                      bgcolor: "#112240", 
                       color: "#00E676", 
                       fontWeight: "bold",
                       '&:hover': {
+                        color:'#112240',
                         bgcolor: '#52d1b9'
                       }
                     }}
