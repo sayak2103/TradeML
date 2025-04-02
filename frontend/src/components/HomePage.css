@@ -1,0 +1,65 @@
+.home-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url("https://source.unsplash.com/1600x900/?finance,trading") no-repeat center center/cover;
+    position: relative;
+  }
+  
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 50px;
+    border-radius: 10px;    
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  h1 {
+    font-size: 3.5rem;
+    color: #00ffcc;
+    text-transform: uppercase;
+  }
+  
+  p {
+    font-size: 1.5rem;
+    color: white;
+  }
+  
+  .trade-button {
+    margin-top: 20px;
+    background-color: #00ffcc;
+    color: black;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    transition: 0.3s ease;
+  }
+  
+  .trade-button:hover {
+    background-color: #00997a;
+    transform: scale(1.1);
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2.5rem;
+    }
+    p {
+      font-size: 1.2rem;
+    }
+  }
+  
