@@ -64,7 +64,7 @@ function Navbar() {
             onClick={() => scrollToSection("hero-section")}
           >
             <TrendingUpIcon sx={{ mr: 1, color: "#FACC15" }} /> {/* Yellow accent */}
-            AutoTrade
+            TradeML
           </Typography>
 
           {/* Mobile Menu */}
@@ -117,7 +117,7 @@ function Navbar() {
             onClick={() => scrollToSection("hero-section")}
           >
             <TrendingUpIcon sx={{ mr: 1, color: "#FACC15" }} />
-            AutoTrade
+            TradeML
           </Typography>
 
           {/* Desktop Menu */}

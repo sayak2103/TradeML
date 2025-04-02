@@ -30,7 +30,7 @@ function TradeArena() {
       <AppBar position="static" sx={{ bgcolor: "#112240", boxShadow: 'none' }}>
         <Toolbar sx={{ minHeight: '48px' }}>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
-            <Box component="span" sx={{ color: "white" }}>AutoTrade</Box>
+            <Box component="span" sx={{ color: "white" }}>TradeML</Box>
             <Box component="span" sx={{ color: "#00E676" }}> | TradeArena</Box>
           </Typography>
           <Button color="inherit" sx={{ color: "white" }}>Portfolio</Button>

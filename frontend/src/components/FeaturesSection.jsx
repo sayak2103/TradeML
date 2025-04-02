@@ -59,7 +59,7 @@ function FeaturesSection() {
             fontWeight="bold"
             color="white"
           >
-            Why Trade with AutoTrade
+            Why Trade with TradeML
           </Typography>
           <Typography variant="body1" align="center" color="#CBD5E1" sx={{ mb: 6 }}>
             Our AI-powered platform gives you the edge in the market with cutting-edge features designed for modern investors.

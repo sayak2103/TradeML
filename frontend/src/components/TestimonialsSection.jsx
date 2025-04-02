@@ -9,19 +9,19 @@ function TestimonialsSection() {
       name: "Sarah Johnson",
       role: "Day Trader",
       rating: 5,
-      testimonial: "AutoTrade has completely transformed my trading strategy. The AI recommendations have increased my returns by 30% in just three months."
+      testimonial: "TradeML has completely transformed my trading strategy. The AI recommendations have increased my returns by 30% in just three months."
     },
     {
       name: "Michael Chen",
       role: "Long-term Investor",
       rating: 5,
-      testimonial: "As someone who doesn't have time to monitor markets constantly, AutoTrade's automated system is perfect. It handles the trading while I focus on my career."
+      testimonial: "As someone who doesn't have time to monitor markets constantly, TradeML's automated system is perfect. It handles the trading while I focus on my career."
     },
     {
       name: "Priya Sharma",
       role: "Financial Advisor",
       rating: 4,
-      testimonial: "I recommend AutoTrade to my clients who want to diversify their investment strategy. The risk management tools are particularly impressive."
+      testimonial: "I recommend TradeML to my clients who want to diversify their investment strategy. The risk management tools are particularly impressive."
     }
   ];
 

@@ -65,7 +65,7 @@ function HomePage() {
                     color: "#4B5563",
                   }}
                 >
-                  Revolutionize your investment strategy with AutoTrade's AI algorithm 
+                  Revolutionize your investment strategy with TradeML's AI algorithm 
                   that optimizes trades, minimizes risks, and maximizes returns.
                 </Typography>
               </motion.div>

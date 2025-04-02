@@ -29,7 +29,7 @@ function TradeWindow() {
   const [total_invested, setTotal_invested] = useState(0);
   const [current_investment, setCurrent_investment] = useState(0);
   const [total_asset, setTotal_asset] = useState(0);
-  const [action, setAction] = useState("id");
+  const [action, setAction] = useState("");
 
   const [candleData, setCandleData] = useState([{}]);
   const [connected, setConnected] = useState(false);
@@ -58,9 +58,13 @@ function TradeWindow() {
         };
         setCandleData((prevcandleData) => [...prevcandleData, candleobj]);
         setData((prevData) => [...prevData, d]);
-        setCap(d[9]);
-        setProfit(d[11]);
+        setAction(d[8]);
+        setCap(d[9].toFixed(3));
+        setProfit(d[11].toFixed(2));
         setNum_shares(d[10]);
+        setTotal_invested(d[12].toFixed(3));
+        setCurrent_investment(d[13].toFixed(3));
+        setTotal_asset(d[14].toFixed(3));
       }
     });
 

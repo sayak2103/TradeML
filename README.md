@@ -1,2 +1,2 @@
-# AutoTrade
+# TradeML
 Stock trading bot

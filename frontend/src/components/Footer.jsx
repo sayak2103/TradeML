@@ -10,7 +10,7 @@ function Footer() {
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
-              AutoTrade
+              TradeML
             </Typography>
             <Typography variant="body2" color="#CBD5E1" sx={{ mb: 2, maxWidth: 300 }}>
               Revolutionizing trading with AI-powered algorithms and automated execution for modern investors.
@@ -65,7 +65,7 @@ function Footer() {
         </Grid>
         <Divider sx={{ my: 4, bgcolor: "#2D3748" }} />
         <Typography variant="body2" color="#94A3B8" align="center">
-          &copy; {new Date().getFullYear()} AutoTrade. All rights reserved.
+          &copy; {new Date().getFullYear()} TradeML. All rights reserved.
         </Typography>
       </Container>
     </Box>

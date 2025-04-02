@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV!="production"){
+if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
 
@@ -15,27 +15,37 @@ const { randomInt } = require("crypto");
 //const { duration } = require("@mui/material");
 const app = express();
 const server = http.createServer(app);
+var pred;
 
 const options = {
     method: 'GET',
     headers: {
-    accept: 'application/json',
-    'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
-    'APCA-API-SECRET-KEY': process.env.ALPACA_API_SECRET
+        accept: 'application/json',
+        'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
+        'APCA-API-SECRET-KEY': process.env.ALPACA_API_SECRET
     }
 };
-async function get_data(url , company){
+async function get_data(url, company) {
     const response = await fetch(url, options)
     //console.log(response.status)
     const json = await response.json();
     return json.bars[company]
 }
-async function getPrediction(state) {
+async function getPrediction(d) {
+    url = `http://localhost:5000/predict`
+
     try {
-        // const response = await axios.get('http://localhost:5000/predict', {
-        //     params: { states: state }  
-        // });
-        // return response.data.prediction;
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(d)
+        })
+            .then(res => res.json())
+            .then(json => {
+                pred = json['prediction']
+            });
     } catch (error) {
         console.error("Error:", error.response ? error.response.data : error.message);
     }
@@ -57,12 +67,12 @@ let cap = 0;
 let profit = 0;
 let num_shares = 0;
 let total_cost = 0;
-app.post('/trade' , (req,res)=>{
+app.post('/trade', (req, res) => {
     company = req.body.company;
     time = req.body.duration;
     cap = req.body.capital;
     profit = num_shares = total_cost = 0;
-    res.json({message : 'data received'});
+    res.json({ message: 'data received' });
 });
 
 io.on("connection", (socket) => {
@@ -71,45 +81,51 @@ io.on("connection", (socket) => {
 
     const interval = setInterval(() => {
         let url = `https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${company}&feed=delayed_sip`;
-        get_data(url , company).then((d) => {
+        get_data(url, company).then((d) => {
             // 0-close | 1-high | 2-low | 3-n | 4-open | 5-time | 6-volume | 7-vol wt. price 
             let data = Object.values(d);
-            pred = getPrediction(data);
-            if(pred == 0){
-                if(data[0] <= cap){
-                    cap-=data[0]
+            getPrediction(data);
+            if (pred == '0') {
+                if (data[0] <= cap) {
+                    cap -= data[0]
                     data.push("BUY")
-                    num_shares ++;
+                    num_shares++;
                     total_cost += data[0];
                 }
-                else{
+                else {
                     data.push("BUY -> aborted")
                 }
             }
-            else if(pred == 1)
+            else if (pred == '1')
                 data.push("HOLD")
-            else{
-                if(num_shares > 0){
+            else {
+                if (num_shares > 0) {
                     let SP = num_shares * data[0];
+                    cap += SP
                     // CP = total_cost
                     let change = SP - total_cost;
                     profit += change
-                    cap += change
                     num_shares = 0
                     total_cost = 0
+                    asset = 0
                     data.push("SELL")
                 }
-                else{
+                else {
                     data.push("SELL -> aborted")
                 }
             }
+            var curret_investment =num_shares * data[0]
             data.push(cap)
             data.push(num_shares)
             data.push(profit)
+            data.push(total_cost)
+            data.push(curret_investment)
+            var asset = cap + curret_investment
+            data.push(asset)
             socket.emit("newData", data);
         })
-        if(time-- == 1){
-            socket.emit("newData" , "TRADE FINISHED");
+        if (time-- == 1) {
+            socket.emit("newData", "TRADE FINISHED");
             clearInterval(interval);
         }
     }, 1000 * 60);
