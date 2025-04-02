@@ -24,7 +24,7 @@ class PolicyTrain :
             Q_value = self.policy.predict(state)
             #probs have the Q value of the possible actions
             #returning the index of the action with maximum Q value
-            return np.argmax(Q_value, axis = 1)[0]
+            return np.argmax(Q_value, axis = 1)
     #
     #
     def sample_experiences(self, batch_size):
@@ -60,25 +60,25 @@ class PolicyTrain :
         target_Q_values = all_Q_values.copy()# nparray [batch_size * possible_actions]
         for i in range(batch_size) :
             target_Q_values[i, actions[i]] = returns[i]
-        grad = self.policy.J.get_grad(target_Q_values , all_Q_values)
-        self.policy.layers[self.policy.num_layers - 1].backward_propagation(grad, self.policy)
-        self.opt.pre_update_params()
-        for i in range(self.policy.num_layers) :
-            self.opt.update_parameters(self.policy.layers[i])
-        self.opt.post_update_params()
-        #self.policy.fit(states, target_Q_values, epochs = 1, optimizer = 'sdg', learning_rate = 0.1)
+        #grad = self.policy.J.get_grad(target_Q_values , all_Q_values)
+        #self.policy.layers[self.policy.num_layers - 1].backward_propagation(grad, self.policy)
+        #self.opt.pre_update_params()
+        #for i in range(self.policy.num_layers) :
+        #    self.opt.update_parameters(self.policy.layers[i])
+        #self.opt.post_update_params()
+        self.policy.fit(states, target_Q_values, epochs = 1, optimizer = 'sdg', learning_rate = 0.1)
     #
     def episode_train(self, batch_size = 100) :
         for episode in range(500) :
             self.env.reset()
             for step in range(10000) :
-                eps = max(1 - episode / 400, 0.01)
+                self.epsilon = max(1 - (episode / 500), 0.01)
                 state = self.env.get_current_state()
                 b = self.trade_once(state)
                 if ~b :
                     break
             if episode > 0 :
-                for i in range(100) :
+                for i in range(50) :
                     self.train_step(batch_size)
 
     #

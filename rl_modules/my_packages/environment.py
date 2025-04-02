@@ -14,7 +14,12 @@ class StockEnv :
     
     def __init__(self) : 
         self.num_shares = 0
-        self.purchase_price = []
+        self.total_invested = 0
+        self.capital = 0
+        self.init_capital = 0
+        self.tax = 0.05
+        self.inflation = 2
+        self.total_asset = 0
         self.avg_price = 0
     #
     def set_env_data(self, data) :
@@ -24,35 +29,43 @@ class StockEnv :
     #
     def reset(self) : 
         self.current_sample = 0
-        self.avg_price = 0
         self.num_shares = 0
-        self.purchase_price.clear()
+        self.total_invested = 0
+        self.capital = 0
+        self.init_capital = 0
+        self.total_asset = 0
+        self.avg_price = 0
     #
     def get_current_state(self) : 
-        return np.append(self.data[self.current_sample,:], self.avg_price)
+        return self.data[self.current_sample,:]
     #
     def reward_function(self, action) :
         reward = 0.
-        close_price = self.data[self.current_sample,StockEnv.close_idx]
+        close_price = self.data[self.current_sample,StockEnv.close_idx] * 1000
         if action == 0  : #BUY
-            reward = -0.5
             self.num_shares += 1
-            self.purchase_price.append(close_price)
-            self.avg_price = np.mean(self.purchase_price)
+            self.capital -= close_price
+            self.total_invested += close_price
+            self.capital -= self.tax
         elif action == 1 : #HOLD
             pass
         elif self.num_shares==0 :
             pass
         else : #SELL
-            profit = self.num_shares * (close_price - self.avg_price)
+            SP = self.num_shares * close_price
+            #CP = total_invested
+            capital += SP
             self.num_shares = 0
-            self.avg_price = 0
-            if profit > 0 :
-                reward += 1
-            elif profit == 0 :
-                reward += 0
-            else :
-                reward -= 1
+            self.total_invested = 0
+        #
+        self.capital -= self.inflation
+        self.total_asset = self.capital + (self.num_shares * close_price)
+        change = self.total_asset - self.init_capital
+        #
+        if(change >= 0) :
+            reward += min((change/10) , 50)
+        else :
+            reward += max((change/10) , -50)
         return reward
     #
     def goto_next_sample(self) :
