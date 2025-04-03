@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./components/HomePage";
 import TradeArena from "./components/TradeArena";
+import Demo from "./components/Demo"
 import Navbar from "./components/Navbar";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -48,6 +49,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/tradearena" element={<TradeArena />} />
+          <Route path="/demo" element = {<Demo/>} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

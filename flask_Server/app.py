@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
 
 # Load the model
-# sys.path.insert(0,'../rl_modules/my_packages/*')
+sys.path.insert(0,'../rl_modules')
 file = open('../model/model6inputs' , 'rb')
 model = pickle.load(file)
 file.close()

@@ -38,6 +38,8 @@ function CallToActionSection() {
               Enter the Trade Arena →
             </Button>
             <Button
+              component={RouterLink}
+              to='/demo'
               variant="outlined"
               size="large"
               sx={{
