@@ -1,5 +1,5 @@
 import { px } from 'framer-motion';
-import demoVideo from '../../video/TradeMLspd3.mp4';
+import demoVideo from '../../../video/TradeMLspd3.mp4';
 
 function Demo()  {
     return(
