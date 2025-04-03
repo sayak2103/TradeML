@@ -124,10 +124,10 @@ Watch the full demo [here](./video/TradeMLspd3.mp4).
 ---
 ## 📧 Contact & Contributions
 For any queries or contributions, reach out via:
-- Email: 
-        Sayak Chowdhury - sayak2103@gmail.com
-        Ankesh Hatui - hatuiankesh2018@gmail.com
-        Priyabrata Senapati - senapatirana415@gmail.com
+#### Email: 
+- Sayak Chowdhury - sayak2103@gmail.com
+- Ankesh Hatui - hatuiankesh2018@gmail.com
+- Priyabrata Senapati - senapatirana415@gmail.com
 
 ---
 ## 📜 License
