@@ -12,19 +12,23 @@ class PolicyTrain :
         #epsilon is needed for making the exploitation and exploration trade-off
         self.gamma = gamma
         #the discount factor during the learning process
-        self.replay_buffer = deque(maxlen = 10000)
+        self.max_buffer_size = 1000
+        self.replay_buffer = deque(maxlen = self.max_buffer_size)
         self.possible_actions = 3
+        self.reward_single_episode = 0
         self.opt = SDG(learning_rate=0.1 , decay=0)
     #
     # EPSILON GREEDY POLICY
     def get_action(self, state) :
         if np.random.randn() < self.epsilon :
-            return np.random.randint(self.possible_actions)
+            action =  np.random.randint(self.possible_actions, dtype=int)
         else : 
             Q_value = self.policy.predict(state)
             #probs have the Q value of the possible actions
             #returning the index of the action with maximum Q value
-            return np.argmax(Q_value, axis = 1)
+            action =  np.argmax(Q_value, axis = 1)[0]
+        #print("Action: ", action)
+        return action
     #
     #
     def sample_experiences(self, batch_size):
@@ -42,6 +46,8 @@ class PolicyTrain :
         if self.env.goto_next_sample() == False:
             return False
         next_state = self.env.get_current_state()
+        self.reward_single_episode += reward
+        #print('action:', action , ' reward:', reward)
         self.replay_buffer.append((state, action, reward, next_state))
         return True
     #
@@ -66,19 +72,21 @@ class PolicyTrain :
         #for i in range(self.policy.num_layers) :
         #    self.opt.update_parameters(self.policy.layers[i])
         #self.opt.post_update_params()
-        self.policy.fit(states, target_Q_values, epochs = 1, optimizer = 'sdg', learning_rate = 0.1)
+        self.policy.fit(states, target_Q_values, epochs = 1, optimizer = 'adam', learning_rate = 0.1)
     #
-    def episode_train(self, batch_size = 100) :
-        for episode in range(500) :
+    def episode_train(self, batch_size = 100, get_log = False) :
+        total_gameplay_time = 1000
+        for episode in range(total_gameplay_time) :
             self.env.reset()
-            for step in range(10000) :
-                self.epsilon = max(1 - (episode / 500), 0.01)
+            self.reward_single_episode = 0
+            for step in range(self.env.samples) :
+                self.epsilon = max(1 - (episode / total_gameplay_time), 0.01)
                 state = self.env.get_current_state()
                 b = self.trade_once(state)
-                if ~b :
+                if b == False :
                     break
-            if episode > 0 :
-                for i in range(50) :
-                    self.train_step(batch_size)
-
+            if get_log and episode % (total_gameplay_time // 10) == 0 :
+                print("Episode: ", episode, " Reward: ", self.reward_single_episode)
+            if  len(self.replay_buffer)>=self.max_buffer_size :
+                self.train_step(batch_size)
     #

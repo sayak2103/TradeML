@@ -17,8 +17,8 @@ class StockEnv :
         self.total_invested = 0
         self.capital = 0
         self.init_capital = 0
-        self.tax = 0.05
-        self.inflation = 2
+        self.tax = 0
+        self.inflation = 0
         self.total_asset = 0
         self.avg_price = 0
     #
@@ -54,14 +54,14 @@ class StockEnv :
         else : #SELL
             SP = self.num_shares * close_price
             #CP = total_invested
-            capital += SP
+            self.capital += SP
             self.num_shares = 0
             self.total_invested = 0
         #
         self.capital -= self.inflation
         self.total_asset = self.capital + (self.num_shares * close_price)
         change = self.total_asset - self.init_capital
-        #
+        #print('capital:', self.capital, ' shares:', self.num_shares, ' total_asset:', self.total_asset)
         if(change >= 0) :
             reward += min((change/10) , 50)
         else :
