@@ -4,7 +4,7 @@ class Losses :
     def get_loss(self, loss) :
         if(loss == 'mse') :
             return Losses().Mse()
-        elif(loss == 'categoricalCrossentropy') :
+        elif(loss == 'categorical_crossentropy') :
             return Losses().Cce()
         elif(loss == 'binaryCrossentropy') :
             return Losses().Bce()
