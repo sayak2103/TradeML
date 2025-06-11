@@ -49,7 +49,7 @@ def predict():
 
         # Make prediction
         prediction = model.predict(new_data)
-        pred = np.argmax(prediction)
+        pred = np.argmax(prediction)[0]
 
         # Return the response as JSON
         return jsonify({"prediction": (str)(pred)})

@@ -35,11 +35,9 @@ class StockEnv :
         self.init_capital = 0
         self.total_asset = 0
         self.avg_price = 0
+        return self.data[self.current_sample]
     #
-    def get_current_state(self) : 
-        return self.data[self.current_sample,:]
-    #
-    def reward_function(self, action) :
+    def step(self, action) :
         reward = 0.
         close_price = self.data[self.current_sample,StockEnv.close_idx] * 1000
         if action == 0  : #BUY
@@ -61,17 +59,27 @@ class StockEnv :
         self.capital -= self.inflation
         self.total_asset = self.capital + (self.num_shares * close_price)
         change = self.total_asset - self.init_capital
-        #print('capital:', self.capital, ' shares:', self.num_shares, ' total_asset:', self.total_asset)
         if(change >= 0) :
             reward += min((change/10) , 50)
         else :
             reward += max((change/10) , -50)
-        return reward
-    #
-    def goto_next_sample(self) :
-        if self.current_sample < self.samples-1 :
-            self.current_sample += 1
-            return True
+        
+        info = {
+            'action' : action,
+            'capital': self.capital,
+            'num_shares': self.num_shares,
+            'total_asset': self.total_asset,
+            'avg_price': self.avg_price,
+            'change': change
+        }
+        
+        if(self.current_sample == self.samples - 1) :
+            done = True
+            next_sample = None
         else :
-            return False
-    
+            done = False
+            next_sample = self.data[self.current_sample + 1]
+            self.current_sample += 1
+        
+        return next_sample, reward, done, info
+    #

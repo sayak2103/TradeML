@@ -66,18 +66,17 @@ def train_model(
             data=json_data,
             company=company,
         )
-        
         #environment setup
         env = StockEnv()
         env.set_env_data(X)#set the data to the environment
         #training tool setup
         training_tool = PolicyTrain(policy,env,min_epsilon=0.01,gamma=0.9)
         #training tool training
-        avg_reward_per_episode , final_reward = training_tool.episode_train(batch_size=400, get_log=get_log)
+        max_reward , avg_reward_per_episode , final_reward = training_tool.episode_train(batch_size=400, get_log=get_log)
         if(get_log):
-            print(f"from {start_date} for {limit}mins of {company} => avg_reward_episode : {avg_reward_per_episode:.3f} final_reward : {final_reward:.3f}")
+            print(f"from {start_date} for {limit}mins of {company} => reward : max : {max_reward:.3f},avg : {avg_reward_per_episode:.3f}, final : {final_reward:.3f}")
         if( log_file is not None):
-            file.write(f"{counter}.  from {start_date} for {limit}mins of {company} => avg_reward_episode : {avg_reward_per_episode:.5f} final_reward : {final_reward:.5f}\n")
+            file.write(f"{counter}.  from {start_date} for {limit}mins of {company} => reward -> max : {max_reward:.3f},avg : {avg_reward_per_episode:.3f}, final : {final_reward:.3f}\n")
         #updating start_date for the next iteration
         start_date = next_time
         #sleep to allow cpu to cool down
@@ -133,12 +132,12 @@ def process_API_data(
     df = pd.DataFrame(data['bars'][f'{company}'])
     #data preprocessing
     training_df = pd.DataFrame()
-    training_df.insert(0,'co',((df['c'] - df['o'] )*10/ df['o']), allow_duplicates=True)
-    training_df.insert(1,'hl',((df['h'] - df['l'] )*10/ df['o']), allow_duplicates=True)
-    training_df.insert(2,'ho',((df['h'] - df['o'] )*10/ df['o']), allow_duplicates=True)
-    training_df.insert(3,'ol',((df['o'] - df['l'] )*10/ df['o']), allow_duplicates=True)
+    training_df.insert(0,'co',((df['c'] - df['o'] )*100/ df['o']), allow_duplicates=True)
+    training_df.insert(1,'hl',((df['h'] - df['l'] )*100/ df['o']), allow_duplicates=True)
+    training_df.insert(2,'ho',((df['h'] - df['o'] )*100/ df['o']), allow_duplicates=True)
+    training_df.insert(3,'ol',((df['o'] - df['l'] )*100/ df['o']), allow_duplicates=True)
     training_df.insert(4,'c',(df['c']/1000),allow_duplicates=True)
-    training_df.insert(5,'vol',(df['v']/10000000), allow_duplicates=True)
+    training_df.insert(5,'vol',(df['v']/10000), allow_duplicates=True)
 
     X = training_df.to_numpy()# numpy array prepared of corresponding dataframe
     return X
