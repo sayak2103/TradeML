@@ -1,0 +1,11 @@
+traning on sequential
+Date : 2025-06-13 16:08:34.275034,traing started for TSLA from 2025-05-20 09:30:00 to 2025-05-20 14:30:00
+> from 2025-05-20 09:30:00 for 90mins of TSLA => reward -> max : 11.550,avg : 1.644, final : 8.991
+, => image : ../model_logs/training_graphs/TSLA_rewards_20250520_0930_90.png
+> from 2025-05-20 11:00:00 for 79mins of TSLA => reward -> max : 3.933,avg : 0.380, final : 0.000
+, => image : ../model_logs/training_graphs/TSLA_rewards_20250520_1100_79.png
+> from 2025-05-20 12:19:00 for 77mins of TSLA => reward -> max : 34.935,avg : 3.412, final : 34.399
+, => image : ../model_logs/training_graphs/TSLA_rewards_20250520_1219_77.png
+> from 2025-05-20 13:36:00 for 82mins of TSLA => reward -> max : 11.128,avg : -1.615, final : 0.000
+, => image : ../model_logs/training_graphs/TSLA_rewards_20250520_1336_82.png
+

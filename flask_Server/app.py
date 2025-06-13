@@ -9,7 +9,7 @@ CORS(app)  # Enable CORS for cross-origin requests
 
 # Load the model
 sys.path.insert(0,'../rl_modules')
-file = open('../model/tradoBot_v1.0.pkl' , 'rb')
+file = open('../models/tradoBot_v2.0' , 'rb')
 model = pickle.load(file)
 file.close()
 def dataEng(npdata):

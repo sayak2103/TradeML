@@ -7,7 +7,7 @@ class PolicyTrain :
     def __init__(self,
                 DNN, 
                 env, 
-                min_epsilon = 0.05, 
+                min_epsilon = 0.0, 
                 gamma = 0.95) :
         self.policy = DNN 
         self.env = env
@@ -19,6 +19,7 @@ class PolicyTrain :
         self.possible_actions = 3
         self.reward_single_episode = 0
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+        self.rewards = []
     #
     # EPSILON GREEDY POLICY
     def get_action(self, state) :
@@ -72,23 +73,27 @@ class PolicyTrain :
 
     #
     def episode_train(self, batch_size = 100, get_log = False) :
-        total_gameplay_time = 10
+        total_gameplay_time = 200
         avg_reward_per_episode = 0
         max_reward = -1*(10**8)
+        self.rewards = []
         for episode in range(total_gameplay_time) :
             state = self.env.reset()
+
             self.reward_single_episode = 0 
             for step in range(self.env.samples) :
                 self.epsilon = max(1 - (episode / total_gameplay_time), self.min_epsilon)
                 state, reward, done, info = self.trade_once(state)
                 if done :
                     break
+            self.rewards.append(self.reward_single_episode)
             avg_reward_per_episode += self.reward_single_episode
             if self.reward_single_episode > max_reward :
                 max_reward = self.reward_single_episode
             if  len(self.replay_buffer)>=self.max_buffer_size :
                 self.train_step(batch_size)
+
         
         avg_reward_per_episode /= total_gameplay_time
-        return max_reward, avg_reward_per_episode, self.reward_single_episode
+        return max_reward, avg_reward_per_episode, self.reward_single_episode, self.rewards
     #

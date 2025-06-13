@@ -5,6 +5,7 @@ import time
 import os.path
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from my_packages.policy_train import PolicyTrain
 from my_packages.environment import StockEnv
 
@@ -15,6 +16,7 @@ def train_model(
         company, 
         headers,
         log_file=None,
+        img_folder=None,
         get_log=False,
         sleep_time=0.1):
     """ 
@@ -43,7 +45,6 @@ def train_model(
         file.write(f"traning on {policy.name}\n")
         file.write(f"Date : {datetime.datetime.now()},traing started for {company} from {start_date} to {end_date}\n")
     
-    counter = 1
     while(start_date < end_date) :
         #random limit for the number of minutes to train E [50,100]
         limit = np.random.randint(50, 100)
@@ -70,19 +71,31 @@ def train_model(
         env = StockEnv()
         env.set_env_data(X)#set the data to the environment
         #training tool setup
-        training_tool = PolicyTrain(policy,env,min_epsilon=0.01,gamma=0.9)
+        training_tool = PolicyTrain(policy,env,min_epsilon=0,gamma=0.9)
         #training tool training
-        max_reward , avg_reward_per_episode , final_reward = training_tool.episode_train(batch_size=400, get_log=get_log)
+        max_reward , avg_reward_per_episode , final_reward , rewards = training_tool.episode_train(batch_size=400, get_log=get_log)
+        if img_folder is not None:
+            #plotting the rewards
+            image_name = f"{company}_rewards_{start_date.strftime('%Y%m%d_%H%M')}_{limit}.png"
+            plt.plot(rewards)
+            plt.xlabel('Episode')
+            plt.ylabel('Reward')
+            plt.axhline(y = max_reward, color='r', linestyle='--', label='Max Reward')
+            plt.axhline(y = avg_reward_per_episode, color='g', linestyle='--', label='Avg Reward')
+            plt.title(f'Rewards for {company} from {start_date} to {next_time}')
+            plt.savefig(f"{img_folder}/{image_name}")
+            plt.close()
         if(get_log):
             print(f"from {start_date} for {limit}mins of {company} => reward : max : {max_reward:.3f},avg : {avg_reward_per_episode:.3f}, final : {final_reward:.3f}")
         if( log_file is not None):
-            file.write(f"{counter}.  from {start_date} for {limit}mins of {company} => reward -> max : {max_reward:.3f},avg : {avg_reward_per_episode:.3f}, final : {final_reward:.3f}\n")
+            file.write(f"> from {start_date} for {limit}mins of {company} => reward -> max : {max_reward:.3f},avg : {avg_reward_per_episode:.3f}, final : {final_reward:.3f}\n")
+            if img_folder is not None:
+                file.write(f", => image : {img_folder}/{image_name}\n")
         #updating start_date for the next iteration
         start_date = next_time
         #sleep to allow cpu to cool down
         if sleep_time > 0 :
             time.sleep(sleep_time)
-        counter += 1
     #
     if(log_file is not None):
         file.write("\n")
@@ -130,14 +143,26 @@ def process_API_data(
     """
     #dataframe creation
     df = pd.DataFrame(data['bars'][f'{company}'])
+    df = scale_data(df)
     #data preprocessing
     training_df = pd.DataFrame()
-    training_df.insert(0,'co',((df['c'] - df['o'] )*100/ df['o']), allow_duplicates=True)
-    training_df.insert(1,'hl',((df['h'] - df['l'] )*100/ df['o']), allow_duplicates=True)
-    training_df.insert(2,'ho',((df['h'] - df['o'] )*100/ df['o']), allow_duplicates=True)
-    training_df.insert(3,'ol',((df['o'] - df['l'] )*100/ df['o']), allow_duplicates=True)
-    training_df.insert(4,'c',(df['c']/1000),allow_duplicates=True)
-    training_df.insert(5,'vol',(df['v']/10000), allow_duplicates=True)
+    training_df.insert(0,'co',((df['c'] - df['o'] )/ df['o']), allow_duplicates=True)
+    training_df.insert(1,'hl',((df['h'] - df['l'] )/ df['o']), allow_duplicates=True)
+    training_df.insert(2,'ho',((df['h'] - df['o'] )/ df['o']), allow_duplicates=True)
+    training_df.insert(3,'ol',((df['o'] - df['l'] )/ df['o']), allow_duplicates=True)
+    training_df.insert(4,'c',(df['c']),allow_duplicates=True)
+    training_df.insert(5,'vol',(df['v']), allow_duplicates=True)
 
     X = training_df.to_numpy()# numpy array prepared of corresponding dataframe
     return X
+
+def scale_data(
+        data: pd.DataFrame,
+        ) :
+    for column in data.columns:
+        if data[column].dtype == 'float64' or data[column].dtype == 'int64':
+            data[column] = data[column] / 10000
+    if 'vol' in data.columns :
+        data['vol'] = data['vol'] / 10
+    
+    return data
