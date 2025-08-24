@@ -17,8 +17,8 @@ class StockEnv :
         self.total_invested = 0
         self.capital = 0
         self.init_capital = 0
-        self.tax = 0
-        self.inflation = 0
+        self.tax = 0.01
+        self.inflation = 0.001
         self.total_asset = 0
         self.avg_price = 0
     #
@@ -51,11 +51,13 @@ class StockEnv :
             pass
         else : #SELL
             SP = self.num_shares * close_price
+            SP -= self.tax
             #CP = total_invested
             self.capital += SP
             self.num_shares = 0
             self.total_invested = 0
         #
+        self.capital -= self.inflation
         self.capital -= self.inflation
         self.total_asset = self.capital + (self.num_shares * close_price)
         change = self.total_asset - self.init_capital

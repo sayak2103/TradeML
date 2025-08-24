@@ -13,15 +13,15 @@ file = open('../models/tradoBot_v2.0' , 'rb')
 model = pickle.load(file)
 file.close()
 def dataEng(npdata):
-    print(npdata)
-    new_data = np.empty(shape=(6,), dtype=float)
-    new_data.push((npdata[0]-npdata[4])*10/npdata[4])
-    new_data.push((npdata[1]-npdata[2])*10/npdata[4])
-    new_data.push((npdata[1]-npdata[4])*10/npdata[4])
-    new_data.push((npdata[4]-npdata[2])*10/npdata[4])
-    new_data.push(npdata[0]/1000)
-    new_data.push(npdata[5]/10000000)
-    print(new_data)
+    npdata = npdata / 1000
+    npdata[5] /= 10
+    new_data = np.ones(6,dtype=float)
+    new_data[0] = ((npdata[0]-npdata[4])/npdata[4])
+    new_data[1] = ((npdata[1]-npdata[2])/npdata[4])
+    new_data[2] = ((npdata[1]-npdata[4])/npdata[4])
+    new_data[3] = ((npdata[4]-npdata[2])/npdata[4])
+    new_data[4] = (npdata[0])
+    new_data[5] = (npdata[5])
     return new_data
 
 @app.route('/predict', methods=['POST'])
@@ -36,26 +36,22 @@ def predict():
             # 0-close | 1-high | 2-low | 3-n | 4-open | 5-volume | 6-vol wt. price 
 
         # print(f'npdata is {npdata}')
-        new_data = np.ones(6,dtype=float)
-        new_data[0] = ((npdata[0]-npdata[4])*10/npdata[4])
-        new_data[1] = ((npdata[1]-npdata[2])*10/npdata[4])
-        new_data[2] = ((npdata[1]-npdata[4])*10/npdata[4])
-        new_data[3] = ((npdata[4]-npdata[2])*10/npdata[4])
-        new_data[4] = (npdata[0]/1000)
-        new_data[5] = (npdata[5]/10000000)
+        new_data = dataEng(npdata)
         # print(f'Enginnered data = {newData}')
-        
+        new_data = new_data[np.newaxis, :]  # Reshape for model input
         # Convert states to numeric format (adjust as per your model's input requirement)
 
         # Make prediction
-        prediction = model.predict(new_data)
-        pred = np.argmax(prediction)[0]
+        prediction = model.predict(new_data, verbose=0)[0]
+        print(prediction)
+        pred = np.argmax(prediction)
 
         # Return the response as JSON
         return jsonify({"prediction": (str)(pred)})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        print(f"Error: {e}", file=sys.stderr)
+        return jsonify({"error": str(e)}), 402
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
